@@ -112,11 +112,17 @@ Trong quá trình tìm thì tôi thấy file `.env` và trong đó chứa tài k
 
 Tôi đã thử kết nối vào thì thấy có 3 tài khoản, mật khẩu bị hash, tôi dùng hashcat với wordlist rockyou.txt nhưng không ra nên bỏ đấy
 
+Tiếp theo thì tôi thử ssh vào bằng username và mật khẩu đó xem như nào và có thể kết nối vào được:
 
+<img width="838" height="865" alt="image" src="https://github.com/user-attachments/assets/4edf5f1d-cf07-4666-a00d-d01620e828f7" />
 
+Ở đây còn có nhắc nhở là có mail gửi đến, tôi check mail ở `/var/mail/admin` thì có 1 đoạn mail:
 
+<img width="846" height="407" alt="image" src="https://github.com/user-attachments/assets/7543d6cf-b62c-499f-b475-b49d4a9efa70" />
 
+Ở đây có nhắc nhở về việc update vì phiên bản này có lỗi, tôi thử search google và ra được [CVE-2023-0386](https://securitylabs.datadoghq.com/articles/overlayfs-cve-2023-0386/)
 
+<img width="1419" height="491" alt="image" src="https://github.com/user-attachments/assets/a548f14e-1fdd-4d92-a32f-1f6bc7d208be" />
 
 
 
