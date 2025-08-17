@@ -124,12 +124,17 @@ Tiếp theo thì tôi thử ssh vào bằng username và mật khẩu đó xem n
 
 <img width="1419" height="491" alt="image" src="https://github.com/user-attachments/assets/a548f14e-1fdd-4d92-a32f-1f6bc7d208be" />
 
+Rõ hơn về cve này thì lỗ hổng này là do sự thiếu sót trong việc xác thực quyền sở hữu của nhân Linux. Nó đã bị "đánh lừa" bởi quyền "root giả" trong một User Namespace, và đã áp dụng quyền sở hữu đó thành quyền root thật trong quá trình "copy-up" của OverlayFS, tạo ra một "cửa hậu" SUID cho kẻ tấn công.
 
+Có thể tìm thấy [poc](https://github.com/sxlmnwb/CVE-2023-0386) trên github, có khá nhiều
 
+Do không thể kết nối ra ngoài nên tôi sử dụng
+```
+scp ~/road_to_hecker_lord/CVE-2023-0386-main.zip admin@10.10.11.221:/tmp
+```
+Để đưa poc vào `/tmp/` của server mà tôi tải từ github về, làm theo hướng dẫn trong github là leo được lên quyền root:
 
+<img width="1608" height="477" alt="image" src="https://github.com/user-attachments/assets/858bcb0d-9e47-4421-8da3-2024a2db624a" />
 
-
-
-
-
+<img width="613" height="90" alt="image" src="https://github.com/user-attachments/assets/02cf3a83-e3b0-4347-a31b-87528014b11c" />
 
