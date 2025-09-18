@@ -174,7 +174,10 @@ drwxr-xr-x  2 neo4j adm   4096 Feb 17  2025 products
 drwxr-xr-x  2 neo4j adm   4096 Sep 17 06:24 run
 lrwxrwxrwx  1 neo4j adm      9 Oct  8  2024 .viminfo -> /dev/null
 ```
-
+Tôi mở file `.bash_history` thì có mật khẩu là:
+```
+neo4j-admin dbms set-initial-password cU4btyib.20xtCMCXkBmerhK
+```
 
 
 
