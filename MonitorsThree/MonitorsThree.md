@@ -41,7 +41,7 @@ Có vẻ như xảy ra sqli, kiểm chứng thêm bằng `admin' AND '1'='1`:
 
 <img width="711" height="633" alt="image" src="https://github.com/user-attachments/assets/4c37fd39-1cbb-475c-b021-38aa8b588c9d" />
 
-Tôi viết tạm đoạn script để xử lý sqli base error này và lấy được hash mật khẩu của admin:
+Tôi viết tạm đoạn [script](https://github.com/namdt5125/road_to_hecker/blob/main/MonitorsThree/exploit.py) để xử lý sqli base error này và lấy được hash mật khẩu của admin, hoặc có thể dùng `EXTRACTVALUE`:
 
 <img width="1062" height="899" alt="image" src="https://github.com/user-attachments/assets/27979426-fa07-4cca-8f8c-90497489a2db" />
 
