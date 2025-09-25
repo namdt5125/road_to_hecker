@@ -1,4 +1,4 @@
-<img width="840" height="964" alt="image" src="https://github.com/user-attachments/assets/f3db5f93-8b91-4227-9344-f95f259af595" /># Alert
+# Alert
 
 Tôi dùng lệnh `nmap -sV 10.10.11.44` để scan các port thì có 80 và 22:
 
