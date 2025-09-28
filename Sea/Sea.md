@@ -1,4 +1,4 @@
-<img width="1857" height="946" alt="image" src="https://github.com/user-attachments/assets/cdd7ef41-64c7-4eaa-8fab-dcbc92bd01f7" /># Sea
+# Sea
 
 <img width="1383" height="769" alt="image" src="https://github.com/user-attachments/assets/da6b5ca2-76ae-47fb-8bec-1a95dcefc038" />
 
