@@ -1,4 +1,4 @@
-<img width="1905" height="973" alt="image" src="https://github.com/user-attachments/assets/88459c31-7034-486d-ac51-5f4f7b538cc0" /><img width="1908" height="1024" alt="image" src="https://github.com/user-attachments/assets/6ec5a65a-b5ff-496e-b4cc-c9d70ba6e195" /># Craft
+# Craft
 
 <img width="1488" height="808" alt="image" src="https://github.com/user-attachments/assets/e5add51d-e476-4c6e-9e6c-c3d5e35a6ce8" />
 
