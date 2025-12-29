@@ -40,9 +40,28 @@ Tôi thử path traversal và nó được:
 
 <img width="1913" height="825" alt="image" src="https://github.com/user-attachments/assets/9762d213-02a9-4d33-9983-400f45eedc1b" />
 
+Tôi dựng lại docker trên máy của tôi và thấy file `database.yml`:
 
+<img width="1099" height="847" alt="image" src="https://github.com/user-attachments/assets/eb49ae8e-b6fd-41d2-9a4b-2e068f6c1a0d" />
 
+<img width="941" height="1017" alt="image" src="https://github.com/user-attachments/assets/b89c4935-3616-4ae9-a38f-292fc70ebc09" />
 
+Tôi lấy được mật khẩu của `ralph` là `$2a$12$dUZ/O7KJT3.zE4TOK8p4RuxH3t.Bz45DSr7A94VLvY9SWx1GCSZnG`:
+
+<img width="944" height="991" alt="image" src="https://github.com/user-attachments/assets/6291b4c0-3466-4ae5-86c3-e708d165b3fa" />
+
+```
+hashcat -m 3200 ~/hashcat/target.txt ~/wordlist/rockyou.txt
+password: 147258369
+```
+
+Lúc này thì login được vào `take-survey.heal.htb` với role là admin:
+
+<img width="1909" height="1021" alt="image" src="https://github.com/user-attachments/assets/f0bb707a-f661-4dfd-af2e-a2ac64669ade" />
+
+Sau 1 lúc ngồi mò thì tôi tìm được cái plugin có thể upload thêm vào, từ đây có thể chèn được thêm webshell:
+
+<img width="1912" height="808" alt="image" src="https://github.com/user-attachments/assets/671456e5-c221-4fda-898e-20b714962078" />
 
 
 
