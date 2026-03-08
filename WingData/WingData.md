@@ -85,8 +85,11 @@ Dùng `sudo -l` thì thấy có file `/opt/backup_clients/restore_backup_clients
 
 Kết hợp các dữ kiện này thì tìm được poc của 2 cve là [CVE-2025-4138-4517](https://github.com/DesertDemons/CVE-2025-4138-4517-POC), upload script lên target:
 
+<img width="1657" height="973" alt="image" src="https://github.com/user-attachments/assets/59140953-3450-4c52-ad7b-b3ed807edefd" />
 
+Sau khi chạy script, chạy giải nén file tar và user wacky lên được root:
 
+<img width="1199" height="912" alt="image" src="https://github.com/user-attachments/assets/f40bb523-b6e1-4292-91e8-9492c929008f" />
 
 
 
